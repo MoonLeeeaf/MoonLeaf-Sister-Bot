@@ -21,7 +21,7 @@ const bot = new TelegramBot(token, {
 
 import { MessagesQuerier, sendMessage, sendPhoto, sendVoice } from './MessagesQuerier.js'
 
-import textFunctions from './text-functions.js'
+import textFunctions from './command-functions.js'
 
 bot.onText(/\/满月 ([\s\S]*)/, (msg, match) => {
     textFunctions.forEach((i) => {

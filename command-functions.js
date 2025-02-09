@@ -116,6 +116,7 @@ export default [
                     parent_msg = queryMessage(parent_msg.reply_to_message.message_id)
                 } while (parent_msg != null)
 
+                console.log(messages)
                 await sendMessage(msg.chat.id, chatResultToText(await requestChat(messages)), {
                     reply_to_message_id: msg.message_id,
                     parse_mode: 'HTML',
