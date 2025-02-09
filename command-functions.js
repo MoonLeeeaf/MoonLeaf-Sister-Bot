@@ -74,7 +74,7 @@ export default [
             function chatResultToText(o) {
                 let think = /<think>([\s\S]*)<\/think>/.exec(o.message.content)[1].trim()
                 let content = o.message.content.replace(/<think>[\s\S]*<\/think>/, '').trim()
-                return `<blockquote expandable>[Ollama Chat]\n模型: ${model}\n已深度思考 ${Math.round(o.eval_duration / 1e9)}s\n思考过程如下\n${think}<\/blockquote>${content}`
+                return `<blockquote expandable>[Ollama Chat]\n模型: ${model}\n已深度思考 ${Math.round(o.eval_duration / 1e9)}s\n思考过程如下\n\n${think}<\/blockquote>${content}`
             }
             /**
              * @param { TelegramBot.MessageId } msgId 
