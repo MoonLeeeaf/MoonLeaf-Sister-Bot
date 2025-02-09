@@ -6,7 +6,7 @@
 
 虽然现在还没有什么功能 :(
 
-[查看功能列表](./blob/main/text-functions.js)
+[查看功能列表](./text-functions.js)
 
 ### 运行
 
