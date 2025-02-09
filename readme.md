@@ -6,6 +6,8 @@
 
 [查看功能列表](./text-functions.js)
 
+对 Bot 输入 /start 或 /help 查看所有指令集
+
 ### 运行
 
 git clone 本仓库, npm install, 然后 node index.js
