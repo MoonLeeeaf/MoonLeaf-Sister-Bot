@@ -2,9 +2,7 @@
 
 ### 简介
 
-继 MoonQQBot 阵亡后, 我转向了 Telegram 开始了玩 Bot 的旅途 :)
-
-虽然现在还没有什么功能 :(
+继 MoonQQBot 后又一次的折腾历程
 
 [查看功能列表](./text-functions.js)
 
