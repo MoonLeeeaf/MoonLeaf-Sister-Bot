@@ -60,7 +60,7 @@ async function sendMessage(chatId, msg, opinions = {}) {
  * @returns { Promise<TelegramBot.Message> }
  */
 async function sendPhoto(chatId, image, opinions = {}, fileOptions = {}) {
-    return MessagesQuerier.addSelf(await globalBot.sendPhoto(chatId, msg, opinions, fileOptions))
+    return MessagesQuerier.addSelf(await globalBot.sendPhoto(chatId, image, opinions, fileOptions))
 }
 
 /**
@@ -73,7 +73,7 @@ async function sendPhoto(chatId, image, opinions = {}, fileOptions = {}) {
  * @returns { Promise<TelegramBot.Message> }
  */
 async function sendVoice(chatId, voice, opinions = {}, fileOptions = {}) {
-    return MessagesQuerier.addSelf(await globalBot.sendVoice(chatId, msg, opinions, fileOptions))
+    return MessagesQuerier.addSelf(await globalBot.sendVoice(chatId, voice, opinions, fileOptions))
 }
 
 /**
