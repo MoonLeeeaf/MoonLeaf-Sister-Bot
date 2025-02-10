@@ -4,7 +4,7 @@
 
 继 MoonQQBot 后又一次的折腾历程
 
-[查看功能列表](./text-functions.js)
+[查看指令列表](./command-functions.js)
 
 对 Bot 输入 /start 或 /help 查看所有指令集
 
