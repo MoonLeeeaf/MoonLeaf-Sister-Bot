@@ -34,7 +34,12 @@ class MessagesQuerier {
      * @returns { TelegramBot.Message }
      */
     static query(chatId, msgId) {
-        return io.open(`data/${chatId}/${msgId}`, 'r').readAllJsonAndClose()
+        try {
+            return io.open(`data/${chatId}/${msgId}`, 'r').readAllJsonAndClose()
+        } catch(e) {
+            console.error(e)
+            throw new Error(`Bot 喝断片啦! 无法从本地查询 消息[chatId=${chatId},msgId=${msgId}]!`)
+        }
     }
 }
 

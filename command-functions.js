@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api"
 import fetchAsBuffer from "./lib/fetchAsBuffer.js"
+import readableStreamAsBuffer from "./lib/readableStreamAsBuffer.js"
 import { MessagesQuerier, sendMessage, sendPhoto, sendVoice } from './MessagesQuerier.js'
 import { requestChat, chatResultToText, replyOrCommandToChat } from './ollama-chat.js'
 
@@ -17,6 +18,28 @@ export default [
             if (!msg.reply_to_message) throw new Error('请在调用此指令的同时回复一条有效的消息')
             await sendMessage(msg.chat.id, `${JSON.stringify(msg.reply_to_message)}`, {
                 reply_to_message_id: msg.message_id,
+            })
+        }
+    },
+    {
+        match: /base64/,
+        usage: 'base64',
+        help: '(携带图片) 图片转换为 base64 url',
+        /**
+         * @param { TelegramBot } bot 
+         * @param { TelegramBot.Message } msg 
+         * @param { RegExpMatchArray } match 
+         */
+        invoke: async function (bot, msg, match) {
+            if (!msg.photo) throw new Error('请在调用此指令的同时携带至少一张图片')
+            let text = ''
+            for (let i of msg.photo) {
+                text += '<blockquote expandable>' + readableStreamAsBuffer(bot.getFileStream(i.file_id)).toString('base64') + '</blockquote>\n'
+            }
+            text = text.trim()
+            await sendMessage(msg.chat.id, text, {
+                reply_to_message_id: msg.message_id,
+                parse_mode: 'HTML',
             })
         }
     },
