@@ -1,7 +1,8 @@
 import TelegramBot from "node-telegram-bot-api"
 import fetchAsBuffer from "./lib/fetchAsBuffer.js"
+import getImageBase64 from "./lib/getImageBase64.js"
 import readableStreamAsBuffer from "./lib/readableStreamAsBuffer.js"
-import { MessagesQuerier, sendMessage, sendPhoto, sendVoice } from './MessagesQuerier.js'
+import { MessagesQuerier, sendMessage, sendPhoto, sendVoice, sendDocument } from './MessagesQuerier.js'
 import { requestChat, chatResultToText, replyOrCommandToChat } from './ollama-chat.js'
 
 export default [
@@ -31,15 +32,13 @@ export default [
          * @param { RegExpMatchArray } match 
          */
         invoke: async function (bot, msg, match) {
-            if (!msg.photo) throw new Error('请在调用此指令的同时携带至少一张图片')
-            let text = ''
-            for (let i of msg.photo) {
-                text += '<blockquote expandable>' + readableStreamAsBuffer(bot.getFileStream(i.file_id)).toString('base64') + '</blockquote>\n'
-            }
-            text = text.trim()
-            await sendMessage(msg.chat.id, text, {
+            if (!msg.photo) throw new Error('请在调用此指令的同时携带一张图片')
+            await sendDocument(msg.chat.id, Buffer.from(await getImageBase64(await bot.getFileStream(msg.photo[msg.photo.length - 1].file_id))), {
                 reply_to_message_id: msg.message_id,
                 parse_mode: 'HTML',
+            }, {
+                filename: 'base64_of_this_image.txt',
+                contentType: 'text/plain',
             })
         }
     },
@@ -76,7 +75,7 @@ export default [
     {
         match: /chat ([\s\S]*)/,
         usage: 'chat <对话内容>',
-        help: '启动新的 AI 聊天对话, 直接回复或以此命令回复此对话以继续聊天(自动获取上下文)',
+        help: '启动新的 AI 聊天对话, 直接回复或以此命令回复 AI 回答的内容以上下文聊天',
         /**
          * @param { TelegramBot } bot 
          * @param { TelegramBot.Message } msg 
