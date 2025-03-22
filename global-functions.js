@@ -19,7 +19,7 @@ export default [,
          */
         invoke: async function (bot, msg, match) {
             // 如果是回复消息 且上文包含 Ollama Chat 的标识符 则继续对话
-            if (msg.reply_to_message && msg.reply_to_message.text && msg.reply_to_message.text.indexOf(detectOllamaChatKeyWord) != -1)
+            if (msg.reply_to_message && msg.reply_to_message.text && msg.text && msg.text.indexOf('NOREPLY') == -1 && msg.reply_to_message.text.indexOf(detectOllamaChatKeyWord) != -1)
                 await replyOrCommandToChat(bot, msg, match)
         }
     },

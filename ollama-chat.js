@@ -100,7 +100,7 @@ async function replyOrCommandToChat(bot, msg, match) {
                 messages.unshift({
                     role: 'user',
                     // 可以使用指令 或者直接回复
-                    content: user_reply_with_command_regexp.test(parent_msg.text) ? user_reply_with_command_regexp.exec(parent_msg.text)[1] : parent_msg.text,
+                    content: user_reply_with_command_regexp.test(parent_msg.text) ? user_reply_with_command_regexp.exec(parent_msg.text)[1] : parent_msg.text.substring(1),
                     images: parent_msg.photo ? [
                         await getImageBase64(await bot.getFileStream(parent_msg.photo[parent_msg.photo.length - 1].file_id)),
                     ] : [],

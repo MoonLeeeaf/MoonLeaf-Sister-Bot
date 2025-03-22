@@ -75,7 +75,7 @@ export default [
     {
         match: /chat ([\s\S]*)/,
         usage: 'chat <对话内容>',
-        help: '启动新的 AI 聊天对话, 直接回复或以此命令回复 AI 回答的内容以上下文聊天',
+        help: '启动新的 AI 聊天对话, 直接回复(使用关键词 NOREPLY 以规避)或以此命令回复 AI 回答的内容以上下文聊天',
         /**
          * @param { TelegramBot } bot 
          * @param { TelegramBot.Message } msg 
@@ -83,6 +83,19 @@ export default [
          */
         invoke: async function (bot, msg, match) {
             await replyOrCommandToChat(bot, msg, match)
+        }
+    },
+    {
+        match: /exit/,
+        usage: 'exit',
+        help: '退出群聊',
+        /**
+         * @param { TelegramBot } bot 
+         * @param { TelegramBot.Message } msg 
+         * @param { RegExpMatchArray } match 
+         */
+        invoke: async function (bot, msg, match) {
+            
         }
     },
 ]
