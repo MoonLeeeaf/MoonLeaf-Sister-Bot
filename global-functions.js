@@ -46,7 +46,7 @@ export default [,
         }
     },
     {
-        match: /\/满月 ([\s\S]*)/,
+        match: / *\/ *(满月|滿月) ([\s\S]*)/,
         usage: '/满月 <指令> ...',
         help: '普通指令调用',
         /**
@@ -56,8 +56,8 @@ export default [,
          */
         invoke: async function (bot, msg, match) {
             commandFunctions.forEach((i) => {
-                if (!i.match.test(match[1])) return
-                const _match = i.match.exec(match[1])
+                if (!i.match.test(match[2])) return
+                const _match = i.match.exec(match[2])
                 i.match.lastIndex = 0
 
                 log(`运行指令 ${i.usage}`)
