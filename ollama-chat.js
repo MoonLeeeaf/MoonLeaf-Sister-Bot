@@ -45,7 +45,7 @@ function chatResultToText(o) {
     const msg = (o.message || o.choices[0].message).content
     let think = thinkRegExp.test(msg) ? thinkRegExp.exec(msg)[1].trim() : ''
     let content = msg.replace(/<think>[\s\S]*<\/think>/, '').trim()
-    return `<blockquote expandable>${detectOllamaChatKeyWord}\n模型: ${model}\n${ o.usage ? `Token消耗: 共 ${o.usage.total_tokens} 个\n` : '' }${ o.eval_duration ? `已${ think == '' ? '' :'深度' }思考 ${Math.round(o.eval_duration / 1e9 * 100) / 100}s\n` : '' }${ think == '' ? '(压根没过程)思考过程如下' : `思考过程如下\n\n${think}` }<\/blockquote>${content}`
+    return `<blockquote expandable>${detectOllamaChatKeyWord}\n模型: ${model}\n${ o.usage ? `Token消耗: 共 ${o.usage.total_tokens} 个\n` : '' }${ o.eval_duration ? `已${ think == '' ? '' :'深度' }思考 ${Math.round(o.eval_duration / 1e9 * 100) / 100}s\n` : '' }${ think == '' ? '(压根没过程)思考过程如下' : `思考过程如下\n\n${think}`}</blockquote>` + `\n${content.length < 66 ? content : `<blockquote expandable>${content}</blockquote>`}`
 }
 
 /**
