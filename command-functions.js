@@ -23,6 +23,21 @@ export default [
         }
     },
     {
+        match: /repeat ([\s\S]*)/,
+        usage: 'repeat [消息]',
+        help: '重複消息',
+        /**
+         * @param { TelegramBot } bot 
+         * @param { TelegramBot.Message } msg 
+         * @param { RegExpMatchArray } match 
+         */
+        invoke: async function (bot, msg, match) {
+            await sendMessage(msg.chat.id, match[1], {
+                parse_mode: "MarkdownV2",
+            })
+        }
+    },
+    {
         match: /base64/,
         usage: 'base64',
         help: '(携带图片) 图片转换为 base64 url',
