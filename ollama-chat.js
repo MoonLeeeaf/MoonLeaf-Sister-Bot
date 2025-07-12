@@ -3,8 +3,8 @@ import configMeta from './configMeta.js'
 import getImageBase64 from './lib/getImageBase64.js'
 import { MessagesQuerier, sendMessage, sendPhoto, sendVoice } from './MessagesQuerier.js'
 
-const model = configMeta.ollama.model
-async function requestChat(messages) {
+const models = configMeta.ollama.models
+async function requestChat(messages, model) {
     configMeta.ollama.system_message && messages.unshift({
         role: 'system',
         content: configMeta.ollama.system_message,
@@ -39,7 +39,7 @@ async function requestChat(messages) {
 }
 
 const detectOllamaChatKeyWord = '[Ollama Chat]'
-function chatResultToText(o) {
+function chatResultToText(o, model) {
     console.log('Ollama Result: ' + JSON.stringify(o))
     const thinkRegExp = /<think>([\s\S]*)<\/think>/
     const msg = (o.message || o.choices[0].message).content
@@ -62,15 +62,21 @@ async function replyOrCommandToChat(bot, msg, match) {
         return MessagesQuerier.query(msg.chat.id, msgId)
     }
     
+    let whichModel = parseInt(match[1]) - 1
+    let model = models[whichModel]
+    
+    console.log(model)
+    
+    bot.sendChatAction(msg.chat.id, 'typing')
     // 初次对话 只有这里需要使用 match 参数
     if (msg.reply_to_message == null) {
         await sendMessage(msg.chat.id, chatResultToText(await requestChat([{
             role: 'user',
-            content: match[1],
+            content: match[2],
             images: msg.photo ? [
                 await getImageBase64(await bot.getFileStream(msg.photo[msg.photo.length - 1].file_id)),
             ] : [],
-        }])), {
+        }], model), model), {
             reply_to_message_id: msg.message_id,
             parse_mode: 'HTML',
         })
@@ -84,7 +90,7 @@ async function replyOrCommandToChat(bot, msg, match) {
         // 先获取 Bot 的ID
         const myId = (await bot.getMe()).id
     
-        const user_reply_with_command_regexp = /\/满月 chat ([\s\S]*)/
+        const user_reply_with_command_regexp = / *\/ *(满月|滿月) chat ([0-9]+) ([\s\S]*)/
         do {
             // Bot 的回复
             if (parent_msg.from.id == myId)
@@ -100,21 +106,27 @@ async function replyOrCommandToChat(bot, msg, match) {
                 messages.unshift({
                     role: 'user',
                     // 可以使用指令 或者直接回复
-                    content: user_reply_with_command_regexp.test(parent_msg.text) ? user_reply_with_command_regexp.exec(parent_msg.text)[1] : parent_msg.text.substring(1),
+                    content: user_reply_with_command_regexp.test(parent_msg.text) ? user_reply_with_command_regexp.exec(parent_msg.text)[2] : parent_msg.text.substring(1),
                     images: parent_msg.photo ? [
                         await getImageBase64(await bot.getFileStream(parent_msg.photo[parent_msg.photo.length - 1].file_id)),
                     ] : [],
                 })
     
             // 当没有上文时 退出循环
-            if (parent_msg.reply_to_message == null)
+            if (parent_msg.reply_to_message == null) {
+                // 模型設定是遵循上文的
+                if (model == null) {
+                    whichModel = parseInt(user_reply_with_command_regexp.exec(parent_msg.text)[2]) - 1
+                    model = models[whichModel]
+                }
                 break
+            }
             
             // 获取上文
             parent_msg = queryMessage(parent_msg.reply_to_message.message_id)
         } while (parent_msg != null)
 
-        await sendMessage(msg.chat.id, chatResultToText(await requestChat(messages)), {
+        await sendMessage(msg.chat.id, chatResultToText(await requestChat(messages, model), model), {
             reply_to_message_id: msg.message_id,
             parse_mode: 'HTML',
         })

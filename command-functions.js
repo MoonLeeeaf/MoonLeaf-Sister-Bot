@@ -4,12 +4,29 @@ import getImageBase64 from "./lib/getImageBase64.js"
 import readableStreamAsBuffer from "./lib/readableStreamAsBuffer.js"
 import { MessagesQuerier, sendMessage, sendPhoto, sendVoice, sendDocument } from './MessagesQuerier.js'
 import { requestChat, chatResultToText, replyOrCommandToChat } from './ollama-chat.js'
+import configMeta from './configMeta.js'
 
 export default [
     {
-        match: /info/,
-        usage: 'info',
+        match: /msg info$/,
+        usage: 'msg info',
         help: '(回复) 查阅所回复消息的结构',
+        /**
+         * @param { TelegramBot } bot 
+         * @param { TelegramBot.Message } msg 
+         * @param { RegExpMatchArray } match 
+         */
+        invoke: async function (bot, msg, match) {
+            if (!msg.reply_to_message) throw new Error('请在调用此指令的同时回复一条有效的消息')
+            await sendMessage(msg.chat.id, `${JSON.stringify(msg.reply_to_message)}`, {
+                reply_to_message_id: msg.message_id,
+            })
+        }
+    },
+    {
+        match: /msg delete$/,
+        usage: 'msg delete',
+        help: '(回复) 刪除消息',
         /**
          * @param { TelegramBot } bot 
          * @param { TelegramBot.Message } msg 
@@ -88,9 +105,9 @@ export default [
         }
     },
     {
-        match: /chat ([\s\S]*)/,
-        usage: 'chat <对话内容>',
-        help: '启动新的 AI 聊天对话, 直接回复(使用关键词 NOREPLY 以规避)或以此命令回复 AI 回答的内容以上下文聊天',
+        match: /chat ([0-9]+) ([\s\S]*)/,
+        usage: 'chat <選擇的模型序號> <对话内容>',
+        help: '启动新的 AI 聊天对话, 直接回复(使用关键词 NOREPLY 以规避)或以此命令回复 AI 回答的内容以上下文聊天, 支持多個模型, 一般選擇 1 即可',
         /**
          * @param { TelegramBot } bot 
          * @param { TelegramBot.Message } msg 
@@ -98,6 +115,21 @@ export default [
          */
         invoke: async function (bot, msg, match) {
             await replyOrCommandToChat(bot, msg, match)
+        }
+    },
+    {
+        match: /chat list$/,
+        usage: 'chat list',
+        help: '獲取所有可用模型列表',
+        /**
+         * @param { TelegramBot } bot 
+         * @param { TelegramBot.Message } msg 
+         * @param { RegExpMatchArray } match 
+         */
+        invoke: async function (bot, msg, match) {
+            await sendMessage(msg.chat.id, JSON.stringify(configMeta.ollama.models), {
+                reply_to_message_id: msg.message_id,
+            })
         }
     },
     {
